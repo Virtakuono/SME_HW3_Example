@@ -10,6 +10,7 @@
 \usepackage{comment}
 \usepackage{caption}
 \usepackage{subcaption}
+%\usepackage{subfigure}
 \frenchspacing
 \newcommand{\partder}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\der}[1]{\partial_{ #1}}
@@ -227,6 +228,24 @@ This choice implies that the bias and sampling errors are of the same order
 \begin{align}
 \mathrm{TSE} = \bigo{M^{-\frac{2}{d+4}}}
 \end{align}
+
+With the above analysis, we produce the set of three images
+for varying $M$ for a one-dimensional KDE and an example of
+two-dimensional gaussian example.
+\begin{figure}
+\begin{center}
+\includegraphics[width=80mm]{./kde_histogram_M_50.pdf}
+\includegraphics[width=80mm]{./kde_histogram_M_500.pdf}
+\includegraphics[width=80mm]{./kde_histogram_M_5000.pdf}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=70mm]{./approximation.pdf}
+\includegraphics[width=70mm]{./reference.pdf}
+\end{center}
+\end{figure}
 
 \section*{KDE for conditional expectation}
 
