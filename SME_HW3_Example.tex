@@ -340,5 +340,40 @@ computational effort.
 
 \section*{Confidence interval, Bootstrapping}
 
+In order to compute the expected shortfall we reuse the MC sample from the previous exercise.
+Let our MC estimator $\overline C$ be given as:
+\begin{align}
+\overline C = \ssum{m=1}{M} \frac{X_i}{M}.
+\end{align}
+Then let us draw $N\times M, ~ N,M \in \mathbb Z$ random variables
+$k_i \in \sset{1,2,3,...M}$. Then define $S_j$ such that
+\begin{align}
+\# A_j =\# \sset{k_i: X_{k_i}>S_j, \parent{j-1 }M \leq i \leq jM-1} = \lfloor pM \rfloor
+\end{align}
+for $j \in {1,2,3,4,...,N}$. and
+\begin{align}
+Q _j = \ssum{i \in A_j}{} \frac{X_i \mathbf{1}_{x>S_j} \parent{X_i}}{\# A_j}
+\end{align}
+then the estimated confidence interval can be noted as $[Q^-,Q^+]$
+as
+\begin{align}
+\# \sset{j: Q_j<Q^{-}} =& \left \lfloor \frac{qN}{2} \right \rfloor \\
+\# \sset{j: Q_j<Q^{+}} =&  \left \lfloor \frac{qN}{2} \right \rfloor .
+\end{align}
+Setting $N=1000$, we obtain the results in the table \ref{tb:BS}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{c c c c }
+  $p$ & $0.9$  & $0.95$  &  $0.99$ \\
+  \hline
+Confidence interval & $[28.1, 30.2]$ & $[36.8, 39.7]$ & $[56.1, 62.1]$ 
+\end{tabular}
+\end{center}
+\caption{\label{tb:BS}
+Confidence intervals for the Expected Shortfall for problem 5 example
+for various quantiles.
+}
+\end{table}
 
 \end{document}

@@ -7,6 +7,7 @@ import matplotlib.mlab as mlab
 import scipy.special as spsp
 import numpy.linalg
 import scipy.stats
+import random
 
 phi = lambda x: 0.5*(1+spsp.erf(x/np.sqrt(2)))
 heaviside = lambda x: 0.5 * (np.sign(x) + 1)
@@ -16,6 +17,8 @@ gaussDensity = lambda x,mu,sigma: np.exp((x-mu)**2/(2*sigma**2))/sigma
 exponentialDensity = lambda x,lam: np.exp(-1*x/lam)/lam
 
 ### Problem 1
+
+print('--Problem 1--')
 
 # Naive MC estimation
 for M in (10000,100000):
@@ -40,8 +43,11 @@ for M in (10000,100000):
 	print('Sample size %d, 90 %% confidence interval for the MC estimator is [%f,%f] (%f %% relative error)'\
 	%(M,estimator+d,estimator+d,d/estimator*100))
 
+print('-----')
 
 ### Problem 3
+
+print('--Problem 3--')
 
 for M in (50,500,5000):
 	randomSample = sp.randn(M)
@@ -112,9 +118,11 @@ plt.savefig('reference.pdf')
 
 # b-part
 
-
+print('-----')
 
 ### Problem 5
+
+print('--Problem 5--')
 
 # set parameters
 
@@ -172,3 +180,33 @@ print('Control Variate MC - 95 %% confidence interval [%f,%f] - %f %% relative e
 estimator = np.mean(np.concatenate((gs+beta*cv,gs_a+beta*cv_a)))
 d = scipy.stats.norm.ppf(0.975)*stdDev(np.concatenate((gs+beta*cv,gs_a+beta*cv_a)))/np.sqrt(2*M)
 print('Hybrid MC - 95 %% confidence interval [%f,%f] - %f %% relative error - %f'%(estimator-d,estimator+d,d/estimator*100,d/estimator*2))
+
+print('-----')
+
+### Problem 6
+
+print('--Problem 6--')
+
+# In this exercise, we use reuse the sample from before
+
+N_resample = 1000
+quantiles = (0.9,0.95,0.99)
+realisations = []
+q = 0.95
+
+for n in range(N_resample):
+	resample_indices = [random.randint(0,M-1) for foo in range(M)]
+	new_sample = np.copy(gs[resample_indices])
+	new_sample.sort()
+	realisations.append([np.mean(new_sample[p*M:]) for p in quantiles])
+
+realisations = np.array(realisations)
+for p_ind in range(3):
+	temporaryVector = realisations[:,p_ind]
+	temporaryVector.sort()
+	i_low = temporaryVector[int(((1-q)/2)*N_resample)]
+	i_high = temporaryVector[int((q-((1-q)/2))*N_resample+1)]
+	print('For p = %.3f %%, 95 %% confidence interval for expected shortfall: [%.4f, %.4f]'%(quantiles[p_ind]*100,i_low,i_high))
+	
+print('-----')	
+	
