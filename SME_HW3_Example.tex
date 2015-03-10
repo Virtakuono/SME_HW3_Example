@@ -166,7 +166,7 @@ from the density $\rho$ as follows
 \end{align}
 with
 \begin{align}
-K \parent{x} = 2^{-d} \mathbb 1_{\nnorm{x}{L_2}}
+K \parent{x} = 2^{-d} \mathbf 1_{\nnorm{x}{L_2}} \parent{x}
 \end{align}
 
 In this estimation, we commit two errors.
@@ -232,13 +232,6 @@ This choice implies that the bias and sampling errors are of the same order
 With the above analysis, we produce the set of three images
 for varying $M$ for a one-dimensional KDE and an example of
 two-dimensional gaussian example.
-\begin{figure}
-\begin{center}
-\includegraphics[width=80mm]{./kde_histogram_M_50.pdf}
-\includegraphics[width=80mm]{./kde_histogram_M_500.pdf}
-\includegraphics[width=80mm]{./kde_histogram_M_5000.pdf}
-\end{center}
-\end{figure}
 
 \begin{figure}
 \begin{center}
@@ -285,7 +278,18 @@ We have
 \end{align}
 We have that the correlation coefficient $\rho$ between 
 $G$ and $C = \parent{\ssum{n=1}{N}\frac{V_n}{K}-K,0}^+$
-exceeds 0.99.
+exceeds 0.99, see fig \ref{cvfig}.
+\begin{figure}
+\begin{center}
+\includegraphics[width=100mm]{./cvplot.pdf}
+\end{center}
+\caption{
+\label{cvfig}
+The MC realisations and corresponding
+control variates show a near-perfect correlation
+}
+\end{figure}
+
 We can form the estimators
 \begin{align}
 \overline C_1 =& \ssum{m=1}{M} \frac{ \parent{\parent{ \ssum{n=1}{N} V_0 \pprod{m=1}{n} R_n}-K}^+ }{M}

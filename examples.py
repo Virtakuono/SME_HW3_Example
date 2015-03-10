@@ -163,6 +163,15 @@ cv -= cvmean
 cv_a -= cvmean
 
 rho = np.corrcoef(gs,cv)[0,1]
+
+plt.figure()
+plt.plot(gs,cv+cvmean,'kx')
+plt.xlabel('MC Realisations')
+plt.ylabel('Control variate realisations')
+plt.title('Control variates vs MC realisations $\\rho=%.3f$'%(rho,))
+plt.grid(1)
+plt.savefig('cvplot.pdf')
+
 beta = - rho*np.sqrt(np.var(gs)/np.var(cv))
 
 estimator = np.mean(gs)
