@@ -8,27 +8,37 @@ import scipy.special as spsp
 import numpy.linalg
 import scipy.stats
 import random
+import time
 
 phi = lambda x: 0.5*(1+spsp.erf(x/np.sqrt(2)))
 heaviside = lambda x: 0.5 * (np.sign(x) + 1)
 stdDev = lambda x: np.sqrt(np.var(x))
-# the two pi constant is insignificant and omitted
-gaussDensity = lambda x,mu,sigma: np.exp((x-mu)**2/(2*sigma**2))/sigma
-exponentialDensity = lambda x,lam: np.exp(-1*x/lam)/lam
+exponentialDensity = lambda x,lam: np.exp(-lam*x/lam)*lam
+randExp = lambda N,lam: -np.log(1-sp.rand(N))/lam
+# this generates exponential random variables
 
 ### Problem 1
 
 print('--Problem 1--')
+t1 = time.time()
+prob_1_reference = phi(3.75)
+failure_probability = prob_1_reference**10000
+print('MC estimate for X > 3.75 when X ~ N(0,1) - reference value %f'%(1-prob_1_reference,))
+print('Probability of all samples falling below 5.75: %f'%(failure_probability))
+
 
 # Naive MC estimation
 for M in (10000,100000):
 	randomSample = 2+sp.randn(M)
 	g = heaviside(randomSample-5.75)
 	estimator = np.mean(g)
-	standardDeviation = np.sqrt(np.var(g)/M)
+	standardDeviation = stdDev(g)/np.sqrt(M)
 	d = standardDeviation*scipy.stats.norm.ppf(0.95)
-	print('Sample size %d, 90 %% confidence interval for the MC estimator is [%f,%f] (%f %% relative error)'\
-	%(M,estimator+d,estimator+d,d/estimator*100))
+	if estimator:
+		print('Naive MC - Sample size %d, 90 %% confidence interval for the MC estimator is [%f,%f] (%f %% relative error)'\
+		%(M,max(estimator-d,0),estimator+d,d/estimator*100))
+	else:
+		print('M=%d No realisations in the tail!'%(M))
 
 # More refined MC estimation
 for M in (10000,100000):
@@ -38,18 +48,35 @@ for M in (10000,100000):
 	g *= np.exp((randomSample-5.75)**2/2-(randomSample-2)**2/2)
 	dd2 = 1.0*g
 	estimator = np.mean(g)
-	standardDeviation = np.sqrt(np.var(g)/M)
+	standardDeviation = stdDev(g)/np.sqrt(M)
 	d = standardDeviation*scipy.stats.norm.ppf(0.95)
-	print('Sample size %d, 90 %% confidence interval for the MC estimator is [%f,%f] (%f %% relative error)'\
-	%(M,estimator+d,estimator+d,d/estimator*100))
+	print('Refined MC - Sample size %d, 90 %% confidence interval for the MC estimator is [%f,%f] (%f %% relative error)'\
+	%(M,max(estimator-d,0),estimator+d,d/estimator*100))
 
-print('-----')
+for M in (10000,100000):
+	ll = np.log(2)/5.75
+	randomSample = randExp(M,ll)
+	g = heaviside(randomSample-5.75)
+	dd1 = 1.0*g
+	g *= np.exp(-(randomSample-2)**2/2+randomSample*ll) / np.sqrt(2*np.pi)/ll
+	dd2 = 1.0*g
+	estimator = np.mean(g)
+	standardDeviation = stdDev(g)/np.sqrt(M)
+	d = standardDeviation*scipy.stats.norm.ppf(0.95)
+	print('MC with exponential r.v. - Sample size %d, 90 %% confidence interval for the MC estimator is [%f,%f] (%f %% relative error)'\
+	%(M,max(estimator-d,0),estimator+d,d/estimator*100))
+
+t2 = time.time()
+print('-- Done in %d seconds --'%(t2-t1))
 
 ### Problem 3
 
 print('--Problem 3--')
 
+t1 = time.time()
+
 for M in (50,500,5000):
+	print('Forming 1D KDE with M=%d'%(M,)) 
 	randomSample = sp.randn(M)
 	h = 20/np.sqrt(M)
 	K = lambda x: 0.5*(1-heaviside(abs(x)-1))
@@ -72,6 +99,8 @@ for M in (50,500,5000):
 	plt.savefig('./kde_histogram_M_%d.pdf'%(M,))
 
 M =100
+
+print('Forming 2D KDE with M=%d')
 
 h = 0.5
 
@@ -118,11 +147,14 @@ plt.savefig('reference.pdf')
 
 # b-part
 
-print('-----')
+
+t2 = time.time()
+print('-- Done in %d seconds --'%(t2-t1))
 
 ### Problem 5
 
 print('--Problem 5--')
+t1 = time.time()
 
 # set parameters
 
@@ -133,12 +165,16 @@ N_t = 51
 M = 10000
 K = 115
 
+print('Set M=%d'%(M,))
+
+# shorthand for positive part
 pos = lambda x: np.fmax(x,np.zeros(len(x)))
 
 gs = np.zeros(M)
 gs_a = np.zeros(M)
 cv = np.zeros(M)
 cv_a = np.zeros(M)
+prob6vec = np.zeros(M) # store the random variables needed in next problem
 
 for m in range(M):
 	dWs = sp.randn(N_t-1)
@@ -148,13 +184,31 @@ for m in range(M):
 	cv_a[m] = np.dot(range(50,0,-1),-1*dWs)
 	Rs += r/50
 	Rs_a += r/50
+	prob6vec[m] = np.mean(V_0*np.exp(np.cumsum(Rs)))
 	gs[m] = max(np.mean(V_0*np.exp(np.cumsum(Rs)))-K,0)
 	gs_a[m] = max(np.mean(V_0*np.exp(np.cumsum(Rs_a)))-K,0)
+
+plt.figure()
+#plt.title('Distribution of the arithmetic mean of log-normal variable.')
+histplot=plt.hist(prob6vec,bins=40)
+plotRed = np.copy(prob6vec)
+itmInds = mlab.find(prob6vec>K)
+plt.hist(plotRed[itmInds],color='red',bins=histplot[1])
+plt.savefig('v_n_histogram.pdf')
 
 cv_sig = np.sqrt(np.dot(range(50,0,-1),range(50,0,-1)))
 P_otm = len(mlab.find(gs==0.0))/float(M)
 K_cv = scipy.stats.norm.ppf(P_otm)
 K_cv *= cv_sig
+
+plt.figure()
+#plt.title('Distribution of the arithmetic mean of log-normal variable.')
+histplot=plt.hist(cv,bins=40)
+plotRed = np.copy(cv)
+itmInds = mlab.find(cv>K_cv)
+plt.hist(plotRed[itmInds],color='red',bins=histplot[1])
+plt.savefig('v_n_histogram_cv.pdf')
+
 cv = pos(cv-K_cv)
 cv_a = pos(cv_a-K_cv)
 cvmean = cv_sig/np.sqrt(2*np.pi)*np.exp(-K_cv**2/2/cv_sig/cv_sig)
@@ -190,11 +244,14 @@ estimator = np.mean(np.concatenate((gs+beta*cv,gs_a+beta*cv_a)))
 d = scipy.stats.norm.ppf(0.975)*stdDev(np.concatenate((gs+beta*cv,gs_a+beta*cv_a)))/np.sqrt(2*M)
 print('Hybrid MC - 95 %% confidence interval [%f,%f] - %f %% relative error - %f'%(estimator-d,estimator+d,d/estimator*100,d/estimator*2))
 
-print('-----')
+t2 = time.time()
+print('-- Done in %d seconds --'%(t2-t1))
+
 
 ### Problem 6
 
 print('--Problem 6--')
+t1 = time.time()
 
 # In this exercise, we use reuse the sample from before
 
@@ -205,7 +262,7 @@ q = 0.95
 
 for n in range(N_resample):
 	resample_indices = [random.randint(0,M-1) for foo in range(M)]
-	new_sample = np.copy(gs[resample_indices])
+	new_sample = np.copy(prob6vec[resample_indices]-K)
 	new_sample.sort()
 	realisations.append([np.mean(new_sample[p*M:]) for p in quantiles])
 
@@ -215,7 +272,8 @@ for p_ind in range(3):
 	temporaryVector.sort()
 	i_low = temporaryVector[int(((1-q)/2)*N_resample)]
 	i_high = temporaryVector[int((q-((1-q)/2))*N_resample+1)]
-	print('For p = %.3f %%, 95 %% confidence interval for expected shortfall: [%.4f, %.4f]'%(quantiles[p_ind]*100,i_low,i_high))
-	
-print('-----')	
+	print('For p = %.3f %%, 95 %% confidence interval for expected shortfall: [%.2f, %.2f]'%(quantiles[p_ind]*100,i_low,i_high))
+
+t2 = time.time()
+print('-- Done in %d seconds --'%(t2-t1))
 	

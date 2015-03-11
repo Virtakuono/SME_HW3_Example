@@ -1,0 +1,184 @@
+\documentclass[10]{beamer}
+
+%\mode<presentation>{
+%\AtBeginDocument{\def\figurename{{\scshape Fig.~\thefigure}}}}
+%
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{wrapfig}
+\usepackage{hyperref}
+%\usepackage{subfig}
+\usepackage{courier}
+\usepackage{extarrows}
+
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Problem 2}
+
+\begin{frame}
+\frametitle{Problem 2}
+\textbf{(a)} A mean zero unit variance random variable $X$ has a Laplace distribution if its pdf is $f(x) = \frac{1}{2}  e^{-|x|}$.\\
+\textbf{Algorithm} to generate such random variable:
+\vspace{0.02in}
+\begin{itemize}
+\item $u \sim U(0,1)$
+\item $ X \sim F_{U}^{-1}(u)$, where 
+\begin{equation*}
+ F_{X}(x) =
+  \begin{cases}
+   1 - \frac{1}{2} e^{-x},\, x \geq 0 \\
+   \frac{1}{2} e^{-x},\,    x < 0
+  \end{cases}
+\end{equation*}
+\begin{equation*}
+ F^{-1}_{U}(u) =
+  \begin{cases}
+   \log{(2u)}, \,     0< u \leq \frac{1}{2} \\
+   -\log{(2(1-u))} ,  \,  \frac{1}{2} \leq u < 1.
+  \end{cases}
+\end{equation*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem 2}
+\textbf{(b)} Algorithm to generate $Y \sim N(\mu,\sigma)$ random variables using the result above.\\
+Assume that there exists $\epsilon \in (0,1]$ such that $\epsilon \frac{f_{Y}(X_k)}{f_{X}(X_k)} \leq 1$.
+\textbf{Algorithm} (Acceptance-Rejection)
+\vspace{0.02in}
+\begin{itemize}
+\item Set k=1
+\item Sample two independent random variables $X_k$ and $U_k \sim U(0,1)$
+\item If $U_{k} \leq \epsilon \frac{f_{Y}(X_k)}{f_{X}(X_k)}$, then accept $Y = X_k$ as sample from $N(\mu,\sigma)$. Otherwise, reject $X_k$, increment k by $1$ and go back to previous step.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem 2}
+\textbf{(c)} Let $U$ and $V$ be two independent standard Gaussian random variables. Prove that the ratio $\frac{U}{V}$ is a Cauchy random variable.\\
+\textbf{Proof}
+\vspace{0.02in}
+%The joint pdf of $U$ and $V$ is $f_{UV} (u,v) = \frac{1}{2\pi} e^{-\frac{u^2 + v^2}{2}}$.\\
+Let $Z = \frac{U}{V}$ then cdf of $Z$ is given by
+\begin{eqnarray*}
+F_{Z}(z) &=& P(\frac{U}{V} \leq z), \\
+&=& P(U \leq zV | V>0) + P(U \geq zv | V < 0), \\
+&=& \int_{0}^{\infty} \left( \int_{-\infty}^{zv} f_{U}(u) \right) f_{V}(v) dv + \int_{-\infty}^{0} \left( \int_{zv}^{-\infty} f_{U}(u) \right) f_{V}(v) dv.
+\end{eqnarray*}
+Then, the pdf of $Z$ is given by
+\begin{eqnarray*}
+f_{Z}(z) &=& \frac{dF_{Z}(z)}{dz}, \\
+&=& \int_{0}^{\infty} v f_{U}(zv) f_{V}(v) dv + \int_{-\infty}^{0} v f_{U}(zv) f_{V}(v) dv, \\
+&=& 2 \int_{0}^{\infty} v f_{U}(zv) f_{V}(v) dv = \frac{1}{\pi(1+z^2)}
+\end{eqnarray*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem 2}
+\textbf{(c)} Algorithm to generate Cauch random variavle:\\
+\begin{itemize}
+\item Generate samples from independent standard Gaussian random variables U and V.
+\item Compute the samples $Z = \frac{U}{V}$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem 4}
+\textbf{(a)} Consider the Nadaraya-Watson estimator $\hat{g}(x)$ for $E[Y|X=x]$ which is derived as following:
+%\vspace{0.02in}
+\begin{equation*}
+g(x) = E[Y|X=x] = \frac{\int y f(y,x) dy}{f(x)},
+\end{equation*}
+using the KDE for both $f(y,x)$ and $f(x)$
+\begin{eqnarray*}
+\hat{f}(y,x) &=& \frac{1}{n} \sum_{i = 1}^{n} \kappa_{h}(y - Y_i) \kappa_{H}(x - X_i), \\
+\hat{f}(x) &=& \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i),
+\end{eqnarray*}
+and the fact that $\int z\kappa_{h} (z)dz = 0$, we obtain
+\begin{equation*}
+\hat{g}(x) = \frac{ \sum_{i = 1}^{n}\kappa_{H}(x - X_i) Y_{i}}{\sum_{i = 1}^{n} \kappa_{H}(x - X_i)}.
+\end{equation*}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Problem 4}
+\textbf{(a)} Optimal rate of convergence\\
+Note we have
+\begin{eqnarray*}
+Y_i &=& g(X_i) + \epsilon_i, \\
+Y_i &=& g(x) + (g(X_i) - g(x)) + \epsilon_i,
+\end{eqnarray*}
+where $E(\epsilon_i | X_i) = 0$ and $E(\epsilon^2_i | X_i = x) = \sigma^2(x)$. \\
+Therefore, the estimator can be written as
+\begin{equation*}
+\hat{g}(x) = g(x) + \frac{\hat{m}_{1}(x)}{\hat{f}_{X}(x)} + \frac{\hat{m}_{2}(x)}{\hat{f}(x)},
+\end{equation*}
+where
+\begin{eqnarray*}
+\hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  (g(X_i) - g(x)), \\
+\hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  \epsilon_i.
+\end{eqnarray*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem 4}
+\textbf{(a)} Optimal rate of convergence\\
+If $d=1$, we can show that
+\begin{eqnarray*}
+E(\hat{m}_{1}(x)) &=& \frac{1}{h} \int k \left( \frac{x-u}{h} \right) (g(u) - g(x)) f(u) du\\
+&=& \int k(z) (g(x+hz) - g(x)) f(x+hz) dz\\
+&& \text{(Taylor expansion)} \\ 
+&=& h^2 B(x) f(x) \int k(z) z^2 dz + o(h^2),
+\end{eqnarray*}
+where $B(x) = \frac{1}{2} g''(x) + \frac{g'(x)}{f(x)} f'(x)$.\\
+Similarly, we can obtain $Var( \hat{m}_{1}(x)) = O(\frac{1}{nh})$.
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem 4}
+\textbf{(a)} Optimal rate of convergence
+\begin{eqnarray*}
+E(\hat{m}_{2}(x)) &=& 0, \\
+Var(\hat{m}_{2}(x)) &=& \frac{1}{nh^2} \int k \left( \frac{x-u}{h} \right)^2  \sigma^2(u) f(u) du \\
+&=& \frac{1}{nh} \int  k(z) \sigma^2(x+hz) f(x+hz) dz \\
+&& \text{(Taylor expansion)} \\
+&=& \frac{\sigma^2(x)f(x)}{nh}  \int k(z)^2 dz + o(h^2),
+\end{eqnarray*}
+The asymptotic mean square error( AMSE ) when $d= 1$ is
+\begin{equation*}
+\left( h^{2} B(x) \right)^{2} \left( \int k(z) z^{2} dz \right)^{2} +  \frac{ \sigma(x)^{2} f_{X}(x)}{nh}  \left( \int k(z)^2 dz \right).
+\end{equation*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem 4}
+\textbf{(a)} Optimal rate of convergence\\
+In General, the asymptotic mean square error( AMSE ) is given by
+\begin{equation*}
+\left( \sum_{j=1}^{d} h_{j}^{2} B_{j}(x) \right)^{2} \left( \int k(z) z^{2} dz \right)^{2} +  \frac{ \sigma(x)^{2} f_{X}(x)}{n|H|}  \left( \int k(z)^2 dz \right)^{d},
+\end{equation*}
+where $B_{j}(x) = \frac{1}{2} \partial^{2}_{x_j} g(x) + f(x)^{-1} \partial_{x_j} g(x) \partial_{x_j}f(x)$ 
+and the optimal value for $h$ is proportional to $N^{-\frac{1}{d+4}}$.
+\end{frame}
+
+
+%\begin{frame}{References}
+%\footnotesize{
+%\begin{thebibliography}{99}
+% 
+% 
+%\end{thebibliography}
+%}
+%\end{frame}
+
+
+
+\end{document}

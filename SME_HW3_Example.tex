@@ -99,7 +99,7 @@ Proof:
 =& 
 \int_{\mathbb R} g \parent{x} \frac{ f_W \parent{x} }{ f_X \parent{x} } f_X \parent{x} dx
 \\
-=& \expp{g \parent{X} \frac{ f_W \parent{x} }{ f_X \parent{x} } }.
+=& \expp{g \parent{X} \frac{ f_W \parent{X} }{ f_X \parent{X} } }.
 \end{align}
 
 \subsection*{b,c}
@@ -145,13 +145,101 @@ Then, there are ready implementations for the inverse of $\Phi_{\mu,\sigma}$, th
 allow us to compute $z^*$ such that $\Phi_{0,1} \parent{z^*} = 0.95$. Using this
 together with the fact that our MC estimator is approximately normally distributed,
 we set $\eta = z^* \sqrt{\frac{\overline \sigma^2}{M}}$ and obtain the confidence interval
-$[\overline \alpha - \eta, \overline \alpha + \eta]$.
+$[\overline \alpha - \eta, \overline \alpha + \eta]$. For the precise results, see table
+\ref{tb:impsamp}.
 
-%\subsection*{e}
-%Let the exponential density be defined by
-%$f_\lambda \parent{x} = \frac{\expf{-\frac{x}{\lambda}}}{\lambda}$ for positive arguments.
+\begin{table}
+\begin{center}
+\begin{tabular}{c c c}
+M & $M=10^4$ & $M=10^5$ \\
+\hline
+Naive MC & $[0.000000,0.000433]$ (116 \%) &$[0.000055,0.000165]$ (50 \%) \\
+Refined MC &$ [0.000084,0.000090]$ (3\%) &$ [0.000088,0.000089]$ (1\%) \\
+Exponential & $[0.000086,0.000103]$ (9\%) & $ [0.000085,0.000091]$ (3\%)
+\end{tabular}
+\end{center}
+\caption{\label{tb:impsamp}
+Confidence intervals for the MC estimators and relative
+errors when sampling from $\mathcal N \parent{0,1}$
+and from $\mathcal N \parent{5.75,1}$.
+Note that the reference value is $\Phi \parent{5.75} =0.000088$
+so that there is almost 40\% that none of the realisations of of a
+random sample of $M=10^4$ exceed $5.75$, leading to an estimate
+of zero, and vanishing variance.
+}
+\end{table}
+
+\subsection*{e}
+We may, of course, use an exponential density too.
+To ensure that half of the samples generated exceed 5.75, we
+may set
+\begin{align}
+\lambda = \frac{\mathrm{ln} 2}{5.75}.
+\end{align}.
+Further improvements can naturally be made, optimising over $\lambda$ as well
+as making affine transformation of the random variable.
 
 \section*{Generate non-uniformly distributed random numbers given uniform}
+
+\subsection({a}
+
+A mean zero unit variance random variable $X$ has a Laplace distribution if its pdf is $f(x) = \frac{1}{2}  e^{-|x|}$.\\
+\textbf{Algorithm} to generate such random variable:
+\vspace{0.02in}
+\begin{itemize}
+\item $u \sim U(0,1)$
+\item $ X \sim F_{U}^{-1}(u)$, where 
+\begin{equation*}
+ F_{X}(x) =
+  \begin{cases}
+   1 - \frac{1}{2} e^{-x},\, x \geq 0 \\
+   \frac{1}{2} e^{-x},\,    x < 0
+  \end{cases}
+\end{equation*}
+\begin{equation*}
+ F^{-1}_{U}(u) =
+  \begin{cases}
+   \log{(2u)}, \,     0< u \leq \frac{1}{2} \\
+   -\log{(2(1-u))} ,  \,  \frac{1}{2} \leq u < 1.
+  \end{cases}
+\end{equation*}
+\end{itemize}
+
+\subsection*{b}
+
+ Algorithm to generate $Y \sim N(\mu,\sigma)$ random variables using the result above.\\
+Assume that there exists $\epsilon \in (0,1]$ such that $\epsilon \frac{f_{Y}(X_k)}{f_{X}(X_k)} \leq 1$.
+\textbf{Algorithm} (Acceptance-Rejection)
+\vspace{0.02in}
+\begin{itemize}
+\item Set k=1
+\item Sample two independent random variables $X_k$ and $U_k \sim U(0,1)$
+\item If $U_{k} \leq \epsilon \frac{f_{Y}(X_k)}{f_{X}(X_k)}$, then accept $Y = X_k$ as sample from $N(\mu,\sigma)$. Otherwise, reject $X_k$, increment k by $1$ and go back to previous step.
+\end{itemize}
+
+\subsection*{c}
+ Let $U$ and $V$ be two independent standard Gaussian random variables. Prove that the ratio $\frac{U}{V}$ is a Cauchy random variable.\\
+\textbf{Proof}
+\vspace{0.02in}
+%The joint pdf of $U$ and $V$ is $f_{UV} (u,v) = \frac{1}{2\pi} e^{-\frac{u^2 + v^2}{2}}$.\\
+Let $Z = \frac{U}{V}$ then cdf of $Z$ is given by
+\begin{eqnarray*}
+F_{Z}(z) &=& P(\frac{U}{V} \leq z), \\
+&=& P(U \leq zV | V>0) + P(U \geq zv | V < 0), \\
+&=& \int_{0}^{\infty} \left( \int_{-\infty}^{zv} f_{U}(u) \right) f_{V}(v) dv + \int_{-\infty}^{0} \left( \int_{zv}^{-\infty} f_{U}(u) \right) f_{V}(v) dv.
+\end{eqnarray*}
+Then, the pdf of $Z$ is given by
+\begin{eqnarray*}
+f_{Z}(z) &=& \frac{dF_{Z}(z)}{dz}, \\
+&=& \int_{0}^{\infty} v f_{U}(zv) f_{V}(v) dv + \int_{-\infty}^{0} v f_{U}(zv) f_{V}(v) dv, \\
+&=& 2 \int_{0}^{\infty} v f_{U}(zv) f_{V}(v) dv = \frac{1}{\pi(1+z^2)}
+\end{eqnarray*}
+
+\subsubsection({Algorithm}
+\begin{itemize}
+\item Generate samples from independent standard Gaussian random variables U and V.
+\item Compute the samples $Z = \frac{U}{V}$.
+\end{itemize}
 
 \section*{Kernel Density Estimator (KDE)}
 
@@ -209,7 +297,7 @@ thus
 \mathrm{V} \parent{\hat \rho \parent{y}}
 =& M^{-1} h^{-2d} \mathrm{V} \parent{K \parent{\frac{y-z}{h}}}
 \\
-\geq M^{-1} h^{-2d} h^{d} \rho \parent{y} \int_{\mathbb R^d} K^2 \parent{z} dz
+\geq& M^{-1} h^{-2d} h^{d} \rho \parent{y} \int_{\mathbb R^d} K^2 \parent{z} dz
 \propto M^{-1} h^{d}
 \end{align}
 
@@ -229,29 +317,130 @@ This choice implies that the bias and sampling errors are of the same order
 \mathrm{TSE} = \bigo{M^{-\frac{2}{d+4}}}
 \end{align}
 
-With the above analysis, we produce the set of three images
+With the above analysis, we produce the set of three images (\ref{fig:1ddens})
 for varying $M$ for a one-dimensional KDE and an example of
-two-dimensional gaussian example.
+two-dimensional gaussian example (\ref{fig:2ddens}).
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=70mm]{./approximation.pdf}
-\includegraphics[width=70mm]{./reference.pdf}
+\includegraphics[width=40mm]{./kde_histogram_M_50.pdf}
+\includegraphics[width=40mm]{./kde_histogram_M_500.pdf}
+\includegraphics[width=40mm]{./kde_histogram_M_5000.pdf}
+
+\caption{
+\label{fig:1ddens}
+One-dimensional multivariate Gaussian and corresponding
+KDEs.
+}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=60mm]{./approximation.pdf}
+\includegraphics[width=60mm]{./reference.pdf}
+\caption{
+\label{fig:2ddens}
+Two-dimensional multivariate Gaussian estimated (left) and exactly computed (right).
+$M=100$ samples, $h=0.5$ 
+}
 \end{center}
 \end{figure}
 
 \section*{KDE for conditional expectation}
+
+\subsection*{a}
+
+Consider the Nadaraya-Watson estimator $\hat{g}(x)$ for $E[Y|X=x]$ which is derived as follows:
+%\vspace{0.02in}
+\begin{equation*}
+g(x) = E[Y|X=x] = \frac{\int y f(y,x) dy}{f(x)},
+\end{equation*}
+using the KDE for both $f(y,x)$ and $f(x)$
+\begin{eqnarray*}
+\hat{f}(y,x) &=& \frac{1}{n} \sum_{i = 1}^{n} \kappa_{h}(y - Y_i) \kappa_{H}(x - X_i), \\
+\hat{f}(x) &=& \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i),
+\end{eqnarray*}
+and the fact that $\int z\kappa_{h} (z)dz = 0$, we obtain
+\begin{equation*}
+\hat{g}(x) = \frac{ \sum_{i = 1}^{n}\kappa_{H}(x - X_i) Y_{i}}{\sum_{i = 1}^{n} \kappa_{H}(x - X_i)}.
+\end{equation*}
+
+
+Optimal rate of convergence\\
+Note we have
+\begin{eqnarray*}
+Y_i &=& g(X_i) + \epsilon_i, \\
+Y_i &=& g(x) + (g(X_i) - g(x)) + \epsilon_i,
+\end{eqnarray*}
+where $E(\epsilon_i | X_i) = 0$ and $E(\epsilon^2_i | X_i = x) = \sigma^2(x)$. \\
+Therefore, the estimator can be written as
+\begin{equation*}
+\hat{g}(x) = g(x) + \frac{\hat{m}_{1}(x)}{\hat{f}_{X}(x)} + \frac{\hat{m}_{2}(x)}{\hat{f}(x)},
+\end{equation*}
+where
+\begin{eqnarray*}
+\hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  (g(X_i) - g(x)), \\
+\hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  \epsilon_i.
+\end{eqnarray*}
+
+
+If $d=1$, we can show that
+\begin{eqnarray*}
+E(\hat{m}_{1}(x)) &=& \frac{1}{h} \int k \left( \frac{x-u}{h} \right) (g(u) - g(x)) f(u) du\\
+&=& \int k(z) (g(x+hz) - g(x)) f(x+hz) dz\\
+&& \text{(Taylor expansion)} \\ 
+&=& h^2 B(x) f(x) \int k(z) z^2 dz + o(h^2),
+\end{eqnarray*}
+where $B(x) = \frac{1}{2} g''(x) + \frac{g'(x)}{f(x)} f'(x)$.\\
+Similarly, we can obtain $Var( \hat{m}_{1}(x)) = O(\frac{1}{nh})$.
+
+\begin{eqnarray*}
+E(\hat{m}_{2}(x)) &=& 0, \\
+Var(\hat{m}_{2}(x)) &=& \frac{1}{nh^2} \int k \left( \frac{x-u}{h} \right)^2  \sigma^2(u) f(u) du \\
+&=& \frac{1}{nh} \int  k(z) \sigma^2(x+hz) f(x+hz) dz \\
+&& \text{(Taylor expansion)} \\
+&=& \frac{\sigma^2(x)f(x)}{nh}  \int k(z)^2 dz + o(h^2),
+\end{eqnarray*}
+The asymptotic mean square error( AMSE ) when $d= 1$ is
+\begin{equation*}
+\left( h^{2} B(x) \right)^{2} \left( \int k(z) z^{2} dz \right)^{2} +  \frac{ \sigma(x)^{2} f_{X}(x)}{nh}  \left( \int k(z)^2 dz \right).
+\end{equation*}
+
+
+In General, the asymptotic mean square error( AMSE ) is given by
+\begin{equation*}
+\left( \sum_{j=1}^{d} h_{j}^{2} B_{j}(x) \right)^{2} \left( \int k(z) z^{2} dz \right)^{2} +  \frac{ \sigma(x)^{2} f_{X}(x)}{n|H|}  \left( \int k(z)^2 dz \right)^{d},
+\end{equation*}
+where $B_{j}(x) = \frac{1}{2} \partial^{2}_{x_j} g(x) + f(x)^{-1} \partial_{x_j} g(x) \partial_{x_j}f(x)$ 
+and the optimal value for $h$ is proportional to $N^{-\frac{1}{d+4}}$.
 
 \section*{Monte Carlo and Variance Reduction}
 
 The task at hand is to evaluate an option on an underlying that is an arithmetic
 mean of a log-normal random variable. No closed form solution exists. However,
 we do have a closed form expression for the arithmetic mean of normal variables.
+Based on a visual inspection (cf. fig \ref{fig:loghist}), the distribution of the underlying is, however, somewhat
+close to a Gaussian and especially the relevant part, the right tail of the distribution could 
+be approximated with a Gaussian with a decent fidelity.
+\begin{figure}
+\begin{center}
+\includegraphics[width=60mm]{./v_n_histogram.pdf}
+\includegraphics[width=60mm]{./v_n_histogram_cv.pdf}
+\end{center}
+\caption{
+\label{fig:loghist}
+The distribution of the underlying of the Asian Option (left)
+and a control variate (right). The right tail of the distribution is
+coloured left to indicate
+realisations \emph{in the money} with strikes $K$  and $\tilde K$.
+}
+\end{figure}
 We have
 \begin{align}
 V_N=V_0 \pprod{n}{N} R_n.
 \end{align}
-Empirically, we see that the probability $P_{tom}$ of $V_N$ being out of the money is
+Empirically, we see that the probability $P_{otm}$ of $V_N$ being out of the money is
 approximately 72 per cent.
 Define
 \begin{align}
@@ -371,12 +560,13 @@ Setting $N=1000$, we obtain the results in the table \ref{tb:BS}
 \begin{tabular}{c c c c }
   $p$ & $0.9$  & $0.95$  &  $0.99$ \\
   \hline
-Confidence interval & $[28.1, 30.2]$ & $[36.8, 39.7]$ & $[56.1, 62.1]$ 
+Confidence interval & $[28.28, 30.01]$ & $[36.51, 38.80]$ & $[52.34, 57.68]$ 
 \end{tabular}
 \end{center}
 \caption{\label{tb:BS}
 Confidence intervals for the Expected Shortfall for problem 5 example
 for various quantiles.
+The width of the confidence interval tends to increase as a function of $q$.	
 }
 \end{table}
 
