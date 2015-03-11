@@ -351,7 +351,7 @@ $M=100$ samples, $h=0.5$
 
 \subsection*{a}
 
-Consider the Nadaraya-Watson estimator $\hat{g}(x)$ for $E[Y|X=x]$ which is derived as follows:
+Consider the Nadaraya-Watson estimator (cf. \cite{kdecond}) $\hat{g}(x)$ for $E[Y|X=x]$ which is derived as follows:
 %\vspace{0.02in}
 \begin{equation*}
 g(x) = E[Y|X=x] = \frac{\int y f(y,x) dy}{f(x)},
@@ -380,7 +380,7 @@ Therefore, the estimator can be written as
 where
 \begin{eqnarray*}
 \hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  (g(X_i) - g(x)), \\
-\hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  \epsilon_i.
+\hat{m}_{2}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  \epsilon_i.
 \end{eqnarray*}
 
 If $d=1$, we can show that
@@ -571,7 +571,7 @@ as
 \end{align}
 Setting $N=1000$, we obtain the results in the table \ref{tb:BS}
 
-\begin{table}
+\begin{table}	
 \begin{center}
 \begin{tabular}{c c c c }
   $p$ & $0.9$  & $0.95$  &  $0.99$ \\
@@ -585,5 +585,12 @@ for various quantiles.
 The width of the confidence interval tends to increase as a function of $q$.	
 }
 \end{table}
+
+\begin{thebibliography}{9}
+
+\bibitem{kdecond} Nadaraya-Watson estimator - \url{http://www.maths.manchester.ac.uk/~peterf/MATH38011/NPR\%20N-W\%20Estimator.pdf}
+
+\bibitem{thecode} Example code in python. \url{https://github.com/Virtakuono/SME_HW3_Example/blob/master/examples.py}
+\end{thebibliography}
 
 \end{document}
