@@ -250,11 +250,11 @@ a density function $\rho \parent{y}$
 based on a MC sample of realisations $y_i \in \mathbb R^d$
 from the density $\rho$ as follows
 \begin{align}
-\hat \rho \parent{y} = \frac{1}{M h^{-d}} \ssum{m=1}{M} K \parent{\frac{y-y_i}{h}},
+\hat \rho \parent{y} = \frac{1}{M h^{-d}} \ssum{m=1}{M} K \parent{\frac{\nnorm{y-y_i}{}}{h}},
 \end{align}
 with
 \begin{align}
-K \parent{x} = 2^{-d} \mathbf 1_{\nnorm{x}{L_2}} \parent{x}
+K \parent{x} = 2^{-d} \mathbf 1_{\nnorm{x}{L_2} <1} \parent{x}
 \end{align}
 
 In this estimation, we commit two errors.
