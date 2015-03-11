@@ -271,7 +271,7 @@ In this estimation, we commit two errors.
 \\
 \approx & 
 \int_{\mathbb R^d}
-\parent{\rho \parent{y} - \parent{\rho \parent{y} - h z_i \partial_{y_i} \rho \parent{y} + h^2 z_i z_j \partial_{z_i,z_j}^2 \rho \parent{y} }}
+\parent{\rho \parent{y} - \parent{\rho \parent{y} - h z_i \partial_{y_i} \rho \parent{y} +\frac{1}{2} h^2 z_i z_j \partial_{z_i,z_j}^2 \rho \parent{y} }}
 K \parent{z}
 dz
 \\
@@ -314,7 +314,7 @@ h^{4+d} \propto M^{-1}.
 \end{align}
 This choice implies that the bias and sampling errors are of the same order
 \begin{align}
-\mathrm{TSE} = \bigo{M^{-\frac{2}{d+4}}}
+\sqrt{\mathrm{TSE}} = \bigo{M^{-\frac{2}{d+4}}}
 \end{align}
 
 With the above analysis, we produce the set of three images (\ref{fig:1ddens})
@@ -428,6 +428,7 @@ The conditional expectation of $y$, given $x$. The sample data is
 generated from $M=400$ realisations of i.i.d. Gaussian random
 variables $z_1$ and $z_2$. $x_2=z_2$, $x_1=z_1+0.3z_2$.
 The blue dashed line indicates the reference at slope $0.3$.
+h =$0.2$.
 }
 \end{figure}
 
@@ -499,7 +500,7 @@ We can form the estimators
 \begin{align}
 \overline C_1 =& \ssum{m=1}{M} \frac{ \parent{\parent{ \ssum{n=1}{N} V_0 \pprod{m=1}{n} R_n}-K}^+ }{M}
 \\
-\overline C_2 =& \ssum{m=1}{2M} \frac{ \parent{\parent{ \ssum{n=1}{N} V_0 \pprod{m=1}{n} \tilde R_{n,m}}-K}^+ }{M} + 
+\overline C_2 =& \ssum{m=1}{2M} \frac{ \parent{\parent{ \ssum{n=1}{N} V_0 \pprod{m=1}{n}  R_{n,m}}-K}^+ }{M} + 
  \ssum{m=1}{2M} \frac{ \parent{\parent{ \ssum{n=1}{N} V_0 \pprod{m=1}{n} \tilde R_{n,m}}-K}^+ }{M}
  \\
  \overline C_3 =& \ssum{m=1}{M} \frac{ \parent{\parent{ \ssum{n=1}{N} V_0 \pprod{m=1}{n} R_n}-K}^+  + \beta \parent {G_m - \expp{Q}}}{M}
