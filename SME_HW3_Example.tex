@@ -181,7 +181,7 @@ as making affine transformation of the random variable.
 
 \section*{Generate non-uniformly distributed random numbers given uniform}
 
-\subsection({a}
+\subsection*{a}
 
 A mean zero unit variance random variable $X$ has a Laplace distribution if its pdf is $f(x) = \frac{1}{2}  e^{-|x|}$.\\
 \textbf{Algorithm} to generate such random variable:
@@ -209,7 +209,7 @@ A mean zero unit variance random variable $X$ has a Laplace distribution if its 
 
  Algorithm to generate $Y \sim N(\mu,\sigma)$ random variables using the result above.\\
 Assume that there exists $\epsilon \in (0,1]$ such that $\epsilon \frac{f_{Y}(X_k)}{f_{X}(X_k)} \leq 1$.
-\textbf{Algorithm} (Acceptance-Rejection)
+\subsubsection*{Algorithm (acceptance-rejection)}
 \vspace{0.02in}
 \begin{itemize}
 \item Set k=1
@@ -235,7 +235,7 @@ f_{Z}(z) &=& \frac{dF_{Z}(z)}{dz}, \\
 &=& 2 \int_{0}^{\infty} v f_{U}(zv) f_{V}(v) dv = \frac{1}{\pi(1+z^2)}
 \end{eqnarray*}
 
-\subsubsection({Algorithm}
+\subsubsection*{Algorithm}
 \begin{itemize}
 \item Generate samples from independent standard Gaussian random variables U and V.
 \item Compute the samples $Z = \frac{U}{V}$.
