@@ -98,15 +98,16 @@ for M in (50,500,5000):
 	plt.grid(1)
 	plt.savefig('./kde_histogram_M_%d.pdf'%(M,))
 
-M =100
+M =1000
 
-print('Forming 2D KDE with M=%d')
+print('Forming 2D KDE with M=%d'%(M))
 
-h = 0.5
+h = 0.2
 
 # define whatever matrix to induce a bit of correlation	
+corrStrength = 0.3
 coefficientMatrix = np.eye(2)
-coefficientMatrix[0,1] += 0.3
+coefficientMatrix[0,1] += corrStrength
 
 randomSample = sp.randn(2,M)
 randomSample = np.dot(coefficientMatrix,randomSample)
@@ -145,8 +146,29 @@ plt.ylabel('$X_2$')
 plt.title('Reference density, $M=%d$'%(M,))
 plt.savefig('reference.pdf')
 
-# b-part
+t2 = time.time()
+print('-- Done in %d seconds --'%(t2-t1))
 
+### Problem 4
+
+print('--Problem 4--')
+plt.figure()
+t1 = time.time()
+
+h = 0.5
+plot_xs = np.linspace(-1,1,50)
+phi_ys = []
+for plot_x in plot_xs:
+	phi_ys.append(np.mean(K(randomSample[0,:]-plot_x)*randomSample[1,:]))
+	phi_ys[-1] /= np.mean(K(randomSample[0,:]-plot_x))
+
+plt.plot(plot_xs,phi_ys,'k-')
+plt.plot(plot_xs,corrStrength*plot_xs,'b--')
+
+plt.grid(1)
+plt.xlabel('$x$')
+plt.ylabel('$\hat g(x)$')
+plt.savefig('cond.pdf')
 
 t2 = time.time()
 print('-- Done in %d seconds --'%(t2-t1))

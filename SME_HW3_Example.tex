@@ -366,7 +366,6 @@ and the fact that $\int z\kappa_{h} (z)dz = 0$, we obtain
 \hat{g}(x) = \frac{ \sum_{i = 1}^{n}\kappa_{H}(x - X_i) Y_{i}}{\sum_{i = 1}^{n} \kappa_{H}(x - X_i)}.
 \end{equation*}
 
-
 Optimal rate of convergence\\
 Note we have
 \begin{eqnarray*}
@@ -383,7 +382,6 @@ where
 \hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  (g(X_i) - g(x)), \\
 \hat{m}_{1}(x) &=&  \frac{1}{n} \sum_{i = 1}^{n} \kappa_{H}(x - X_i)  \epsilon_i.
 \end{eqnarray*}
-
 
 If $d=1$, we can show that
 \begin{eqnarray*}
@@ -414,6 +412,24 @@ In General, the asymptotic mean square error( AMSE ) is given by
 \end{equation*}
 where $B_{j}(x) = \frac{1}{2} \partial^{2}_{x_j} g(x) + f(x)^{-1} \partial_{x_j} g(x) \partial_{x_j}f(x)$ 
 and the optimal value for $h$ is proportional to $N^{-\frac{1}{d+4}}$.
+
+\subsection*{b}
+
+Let us reuse the sample from the last exercise and show an illustration
+of the performance of the algorithm in figure \ref{fig:cond}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=80mm]{./cond.pdf}
+\end{center}
+\caption{
+\label{fig:cond}
+The conditional expectation of $y$, given $x$. The sample data is
+generated from $M=400$ realisations of i.i.d. Gaussian random
+variables $z_1$ and $z_2$. $x_2=z_2$, $x_1=z_1+0.3z_2$.
+The blue dashed line indicates the reference at slope $0.3$.
+}
+\end{figure}
 
 \section*{Monte Carlo and Variance Reduction}
 
